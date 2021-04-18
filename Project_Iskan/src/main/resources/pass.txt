@@ -1,0 +1,10 @@
+L:admin
+P:123
+L:iskander
+P:password
+L:guest
+P:1234
+L:user12
+P:get
+L:imerror
+P:!?
