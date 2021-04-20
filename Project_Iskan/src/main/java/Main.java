@@ -9,6 +9,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.FocusAdapter;
 import java.awt.event.FocusEvent;
+import java.awt.event.ItemListener;
 import java.text.DateFormat;
 import java.text.DecimalFormat;
 import java.text.ParseException;
@@ -33,6 +34,7 @@ public class Main extends JFrame {
 	static int clearhelp = 0;
 	static int col1;
 	static int ger=0;
+	static Float danger = 1.0F;
 
 	public Main() throws ParseException {
         JFrame frame1 = new JFrame("Зарплатный калькулятор"); //создание главного окна
@@ -227,7 +229,7 @@ public class Main extends JFrame {
         panel4.add(panel4_1);
         
         JPanel panel4_2 = new JPanel();
-        panel4_2.setLayout(content_4column);
+        panel4_2.setLayout(content_5column);
         
         ButtonGroup radgroup = new ButtonGroup();
         JRadioButton rad0 = new JRadioButton("Нет", true);
@@ -242,6 +244,29 @@ public class Main extends JFrame {
         panel4_2.add(rad1);
         panel4_2.add(rad2);
         panel4_2.add(rad3);
+        
+        ButtonGroup radgroup2 = new ButtonGroup();
+        JCheckBox rad4 = new JCheckBox("<html>Вредоносные условия труда</html>");
+        radgroup2.add(rad4);
+        JCheckBox rad5 = new JCheckBox();
+        radgroup2.add(rad5);
+        panel4_2.add(rad4);
+        
+        ActionListener actionListener = new ActionListener() {
+        	 
+        	@Override
+        	 
+        	public void actionPerformed(ActionEvent actionEvent) {
+        	 
+        	    if (rad4.isSelected()) {
+        	    	rad4.setSelected(false);
+        	    }
+        	 
+        	}
+        	 
+        	  };
+        	  
+        	  rad4.addActionListener(actionListener);
 
         JTextField days = new JTextField("Кол-во дней");
         Font daysfont = new Font("Calibri", Font.PLAIN, 12);
@@ -385,6 +410,8 @@ public class Main extends JFrame {
         JTextField end = new JTextField("");
         
         JLabel result = new JLabel("");
+        
+        
 
         enter.addActionListener(new ActionListener() {                                                         
 			public void actionPerformed(ActionEvent e) {
@@ -404,8 +431,11 @@ public class Main extends JFrame {
 				LocalDate endDate = LocalDate.parse(seconddates, formatter);
 				Period period = Period.between(startDate, endDate);
 				
+				if (rad4.isSelected()) danger=1.05F;
+				else danger=1.0F;
+				
 				long p2 = ChronoUnit.DAYS.between(startDate, endDate);
-				profit = Float.parseFloat(salary.getText())/30*p2;
+				profit = Float.parseFloat(salary.getText())/30*p2*danger;
 				DecimalFormat decimalFormat = new DecimalFormat( "#.###" );
 				result.setText(String.valueOf( Math.ceil(profit*Math.pow(10, 2))/Math.pow(10, 2)) );
 				
@@ -419,7 +449,7 @@ public class Main extends JFrame {
 				rsum4.setText(String.valueOf(Math.ceil(profit/100*0.2*Math.pow(10, 2))/Math.pow(10, 2)) + "р.");
 				
 				if (rad1.isSelected() || rad2.isSelected() || rad3.isSelected()) {
-					profit = profit - Float.parseFloat(salary.getText())/30*Float.parseFloat(days.getText());
+					profit = profit - Float.parseFloat(salary.getText())/30*Float.parseFloat(days.getText())*danger;
 					lsum0.setText(String.valueOf((Math.ceil(profit*Math.pow(10, 2)))/Math.pow(10, 2)) + "р.");
 					lsum2.setText(String.valueOf((Math.ceil(profit/100*13*Math.pow(10, 2)))/Math.pow(10, 2)) + "р.");
 					lsum1.setText(String.valueOf((Math.ceil((profit-(profit/100*13))*Math.pow(10, 2)))/Math.pow(10, 2)) + "р.");
@@ -468,7 +498,6 @@ public class Main extends JFrame {
         ClearBar ClearBar=new ClearBar();
         clear.addActionListener(new ActionListener() {                                                         
 			public void actionPerformed(ActionEvent e) { 
-				System.out.println("clearhelp: " + clearhelp);
 				if (!ClearBar.isAlive())
 					ClearBar.start();
 					else {
@@ -514,6 +543,7 @@ public class Main extends JFrame {
 				}
 				if (clearhelp==0) {
 					rad0.setSelected(true);
+					rad5.setSelected(true);
 					days.setText(daystext);
 					days.disable();
 					
